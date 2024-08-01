@@ -1,4 +1,38 @@
-import React from 'react';
+//import React from 'react';
+'use client';
+import React, { useState } from 'react';
+import axios from 'axios';
+
+
+const handleSubmit = async (event) => {
+  event.preventDefault(); // Prevent default form submission behavior
+  console.log("test");
+
+
+  const formData = {
+      // Get form data from input fields
+      name: event.target.name.value,
+      phoneNumber: event.target.phoneNumber.value,
+      email: event.target.email.value,
+      password: event.target.password.value,
+  };
+  /*const { nome, numero, email, password } = event.target;
+  const formData = {
+    nome,
+    numero,
+    email,
+    password,
+};*/
+
+  try {
+    console.log(formData);
+      const response = await axios.post('http://Localhost:8025/user/create', formData);
+      console.log(response.data); // Handle successful response (e.g., display success message)
+  } catch (error) {
+      console.error(error); // Handle errors (e.g., display error message)
+  }
+};
+
 
 const Registo = () => {
   return (
@@ -9,16 +43,16 @@ const Registo = () => {
       </div>
       
       <div className="form-container">
-        <form className="form">
+        <form className="form" onSubmit={handleSubmit} >
         <h1>Registo</h1>
           <p className='text-[16px] md:text-[30px] lg:[60px]'>Insira as credenciais para criar a conta</p>
           <div className="grupo">
             <label htmlFor="primeironome" className="label">Nome:</label>
-            <input type="text" id="primeironome" name="primeironome" className="input" placeholder="Insira o seu nome" />
+            <input type="text" id="primeironome" name="name" className="input" placeholder="Insira o seu nome" />
           </div>
           <div className="grupo">
-            <label htmlFor="apelido" className="label">Apelido:</label>
-            <input type="text" id="apelido" name="apelido" className="input" placeholder="Insira o seu apelido" />
+            <label htmlFor="apelido" className="label">Numero de Telefone:</label>
+            <input type="text" id="numero" name="phoneNumber" className="input" placeholder="Insira o seu Numero de Telefone" />
           </div>
           <div className="grupo">
             <label htmlFor="email" className="label">Email:</label>
@@ -28,8 +62,7 @@ const Registo = () => {
             <label htmlFor="password" className="label">Password:</label>
             <input type="password" id="password" name="password" className="input" placeholder="Insira Palavra-passe" />
           </div>
-          <button type="submit" className="enviar">Enviar</button>
-          <p className='autenticacao'>Ja tem conta <a href="login">faz a autenticacao</a></p>
+          <button type="submit" className="enviar">Enviar</button>          <p className='autenticacao'>Ja tem conta <a href="login">faz a autenticacao</a></p>
         </form>
       </div>
     </div>

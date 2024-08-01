@@ -1,29 +1,92 @@
-export default function Login(){
-    return(
-        <div className="container">
-    
+
+'use client';
+//import { useState } from 'next/client';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { Navigate, useNavigate } from 'react-router-dom'; 
+
+export default function Login() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState(null);
+  //const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    try {
+      const response = await axios.post('http://localhost:8025/auth/login', {
+        email,
+        password,
+      });
+
+      console.log(response);
+      if (!(response.status === 200)) {
+        throw new Error('Login failed');
+      }
+
+     // const data = await response.data;
+      const token = await response.data;
+      //const token = data.token;
+      //console.log(token);
+
+      storeTokenInCookie(token);
+     // navigate('/registo');
+
+      // Redirect to a protected page or display success message
+      window.location.href = '/'; // Adjust redirect path
+      //window.location.href = 'login!';
+
+    } catch (error) {
+      console.error(error);
+      setError(error.message);
+    }
+  };
+
+  function storeTokenInCookie(token) {
+    document.cookie = `jwtToken=${token}; path=/; expires=${new Date(Date.now() + 24 * 60 * 60 * 1000).toUTCString()}; SameSite=Strict; HttpOnly`;
+  }
+
+  return (
+    <div className="container">
       <div className="image-container">
-        <img src="https://s3-alpha-sig.figma.com/img/bd64/f621/f3ba4221b4d72863833286f3566b8edb?Expires=1716163200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=Z04AACG6T8HSF8IJ~hiOCfc6kL2rp0DXoDSy4V09Z0KyjLxbPnT-ajPjF9UXKi3~9NBhjAMp278XSooqxuIJwo6QJRBOhUjZQmwCHIVuVGfucxcdCVBJoY7wY6gb-lUuccw9~wHphGoSTUJdu1lt4lkWEmuOrcL76ClmT7t2VG~tMbkCPHCLvf0r~pTT-P1h4sfOF60FF~pvWeNdp1IuxQI6DZlT-vy8EM2-ohGndaNzAtMY2SN3HqoSwSWm8V~Wf2ypNOqn0T4oT6uJyDKj2aVOzujFjx7ePo39j0Sbwid61t9D4zC73Me1eECEIoqXWL4BJIN952EfDs8LxDpE7Q__" alt="Sua Imagem" className="image" />
+        {/* Your image here */}
       </div>
-      
       <div className="form-container">
-        <form className="form">
-        <h1>Login</h1>
-        <p>Insira o seu email e password para ter acesso a sua conta</p>
+        <form className="form" onSubmit={handleSubmit}>
+          <h1>Login</h1>
+          {error && <p className="error">{error}</p>}
+          <p>Insira o seu email e password para ter acesso a sua conta</p>
           <div className="grupo">
             <label htmlFor="email" className="label">Email:</label>
-            <input type="email" id="email" name="email" className="input" placeholder="Insira o seu email" />
+            <input
+              type="email"
+              id="email"
+              name="email"
+              className="input"
+              placeholder="Insira o seu email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
           <div className="grupo">
             <label htmlFor="password" className="label">Password:</label>
-            <input type="password" id="password" name="password" className="input" placeholder="Insira Palavra-passe" />
+            <input
+              type="password"
+              id="password"
+              name="password"
+              className="input"
+              placeholder="Insira Palavra-passe"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
           <button type="submit" className="enviar">Enviar</button>
-          <p className='autenticacao'><a href="recuperarpasse">Esqueceste a palavra-passe</a></p>
-       
+          <p className="autenticacao">
+            <a href="recuperarpasse">Esqueceste a palavra-passe</a>
+          </p>
         </form>
       </div>
     </div>
-
-    );
+  );
 }
